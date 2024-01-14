@@ -1,4 +1,4 @@
-# MTLS Authentication Demo Repository Using Envoy
+# mTLS Authentication Demo Repository Using Envoy
 
 This repository contains a sample configuration for trying out mTLS authentication (TLS server certificate and client certificate authentication) using Envoy. It communicates with the application server via gRPC. To test the behavior of load balancing, multiple replicas of backend servers and Envoy are configured.
 
