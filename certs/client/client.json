@@ -1,0 +1,14 @@
+{
+  "CN": "appclient",
+  "hosts": ["app-internal-api"],
+  "key": {
+    "algo": "ecdsa",
+    "size": 256
+  },
+  "names": [
+    {
+      "ST": "Tokyo",
+      "C": "JP"
+    }
+  ]
+}

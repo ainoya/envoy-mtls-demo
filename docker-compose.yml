@@ -1,0 +1,86 @@
+# Example to test client-server authentication with Envoy
+services:
+  proxy-app-frontend:
+    image: envoyproxy/envoy:v1.28-latest
+    networks:
+      - app-backend
+    ports:
+      - "2443:2443"
+    volumes:
+      - ./certs/client:/etc/ssl/envoy/client
+      - ./certs/ca:/etc/ssl/envoy/ca
+      - ./envoy-conf:/etc/envoy
+    command:
+      - "envoy"
+      - -c
+      - "/etc/envoy/example-mtls-access-envoy-conf.yaml"
+      # loglevel debug
+      - --log-level
+      - debug
+  proxy-app-frontend-invalid:
+    image: envoyproxy/envoy:v1.28-latest
+    networks:
+      - app-backend
+    ports:
+      - "2444:2443"
+    volumes:
+      - ./certs/client-invalid-san:/etc/ssl/envoy/client
+      - ./certs/ca:/etc/ssl/envoy/ca
+      - ./envoy-conf:/etc/envoy
+    command:
+      - "envoy"
+      - -c
+      - "/etc/envoy/example-mtls-access-envoy-conf.yaml"
+      # loglevel debug
+      - --log-level
+      - debug
+
+  proxy-app-backend:
+    image: envoyproxy/envoy:v1.28-latest
+    networks:
+      app-backend:
+        aliases:
+          - app-internal-api
+    volumes:
+      - ./certs/server:/etc/ssl/envoy/server
+      - ./certs/ca:/etc/ssl/envoy/ca
+      - ./envoy-conf:/etc/envoy
+    command:
+      - "envoy"
+      - -c
+      - "/etc/envoy/app-internal-api-envoy.yaml"
+      - --log-level
+      - debug
+    deploy:
+      replicas: 2
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+
+  app:
+    networks:
+      app-backend:
+        aliases:
+          - app
+    image: python:3.8.5-alpine
+    build:
+      context: grpc-server
+      dockerfile: Dockerfile
+    command:
+      - "python"
+      - "grpc_server_with_reflection.py"
+    deploy:
+      replicas: 2
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+
+networks:
+  app-backend:
+    name: app-backend
+
+  app-frontend:
+    name: app-frontend
+
+  app-in-between:
+    name: app-in-between

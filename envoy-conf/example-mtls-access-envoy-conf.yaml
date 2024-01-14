@@ -1,0 +1,45 @@
+static_resources:
+  listeners:
+    - name: app-internal-api-listener
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 2443
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.tcp_proxy
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy
+                stat_prefix: app-internal-api
+                cluster: app-internal-api
+                idle_timeout: 10s
+                max_downstream_connection_duration: 10s
+  clusters:
+    - name: app-internal-api
+      type: STRICT_DNS
+      connect_timeout: 10s
+      common_http_protocol_options:
+        idle_timeout: 10s
+        max_connection_duration: 10s
+      load_assignment:
+        cluster_name: app-internal-api
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: app-internal-api
+                      port_value: 9443
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+          common_tls_context:
+            tls_certificates:
+              - certificate_chain:
+                  filename: /etc/ssl/envoy/client/client.pem
+                private_key:
+                  filename: /etc/ssl/envoy/client/client-key.pem
+            validation_context:
+              trusted_ca:
+                filename: /etc/ssl/envoy/ca/ca.pem
