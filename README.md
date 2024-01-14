@@ -43,4 +43,3 @@ mtls-docker-compose-demo-proxy-app-backend-1  | [2024-01-14 04:13:53.837][30][de
 
 - [double proxy](https://github.com/envoyproxy/envoy/tree/main/examples/double-proxy)
 
----
