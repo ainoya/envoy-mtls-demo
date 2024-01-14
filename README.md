@@ -39,4 +39,8 @@ mtls-docker-compose-demo-proxy-app-backend-1  | [2024-01-14 04:13:53.836][30][de
 mtls-docker-compose-demo-proxy-app-backend-1  | [2024-01-14 04:13:53.837][30][debug][connection] [source/extensions/transport_sockets/tls/ssl_socket.cc:241] [Tags: "ConnectionId":"2"] remote address:172.20.0.4:58824,TLS_error:|268435581:SSL routines:OPENSSL_internal:CERTIFICATE_VERIFY_FAILED:TLS_error_end
 ```
 
+### References
+
+- [double proxy](https://github.com/envoyproxy/envoy/tree/main/examples/double-proxy)
+
 ---
